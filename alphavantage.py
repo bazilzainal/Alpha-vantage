@@ -59,5 +59,5 @@ def GenerateFile (para):
 
     return
 
-# GenerateFile(params_crypto)
-# GenerateFile(params_ema)
+GenerateFile(params_crypto)
+GenerateFile(params_ema)
