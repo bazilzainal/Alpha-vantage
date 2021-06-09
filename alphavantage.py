@@ -28,10 +28,21 @@ params_ema = {
     'apikey': 'C5DHIEK34Q4PVXGJ'
 }
 
+params_crypex = {
+    'function': 'CURRENCY_EXCHANGE_RATE',
+    'from_currency': 'BTC',
+    'to_currency': 'USD',
+    'apikey': 'C5DHIEK34Q4PVXGJ'
+}
+
 # Task 1
 currency = requests.get(url, params=params_currency)
 exchange_rate = currency.json()['Realtime Currency Exchange Rate']['5. Exchange Rate']
 print(f'The exchange rate from SGD to GBP is: {exchange_rate}')
+
+currency = requests.get(url, params=params_crypex)
+exchange_rate = currency.json()['Realtime Currency Exchange Rate']['5. Exchange Rate']
+print(f'The exchange rate from BTC to USD is: {exchange_rate}')
 
 # Task 2 and 3
 def GenerateFile (para):
@@ -48,5 +59,5 @@ def GenerateFile (para):
 
     return
 
-GenerateFile(params_crypto)
-GenerateFile(params_ema)
+# GenerateFile(params_crypto)
+# GenerateFile(params_ema)
