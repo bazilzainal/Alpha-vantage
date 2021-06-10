@@ -1,15 +1,24 @@
 import requests
+import time
+from datetime import datetime
 
 url = 'https://www.alphavantage.co/query'
 
-params_currency = {
+sgd_to_gbp = {
     'function': 'CURRENCY_EXCHANGE_RATE',
     'from_currency': 'SGD',
     'to_currency': 'GBP',
     'apikey': 'C5DHIEK34Q4PVXGJ'
 }
 
-params_crypto = {
+btc_to_usd = {
+    'function': 'CURRENCY_EXCHANGE_RATE',
+    'from_currency': 'BTC',
+    'to_currency': 'USD',
+    'apikey': 'C5DHIEK34Q4PVXGJ'
+}
+
+file_eth_intraday = {
     'function': 'CRYPTO_INTRADAY',
     'symbol': 'ETH',
     'market': 'SGD',
@@ -18,7 +27,7 @@ params_crypto = {
     'apikey': 'C5DHIEK34Q4PVXGJ'
 }
 
-params_ema = {
+file_fb_ema = {
     'function': 'EMA',
     'symbol': 'FB',
     'interval': 'daily',
@@ -28,21 +37,25 @@ params_ema = {
     'apikey': 'C5DHIEK34Q4PVXGJ'
 }
 
-params_crypex = {
-    'function': 'CURRENCY_EXCHANGE_RATE',
-    'from_currency': 'BTC',
-    'to_currency': 'USD',
-    'apikey': 'C5DHIEK34Q4PVXGJ'
-}
+high_price = [0]
+
+print(datetime.now().strftime('%H,%M,%S,%d,%m,%Y'))
 
 # Task 1
-currency = requests.get(url, params=params_currency)
-exchange_rate = currency.json()['Realtime Currency Exchange Rate']['5. Exchange Rate']
-print(f'The exchange rate from SGD to GBP is: {exchange_rate}')
+def GetCurrency(paraminput):
+    currency = requests.get(url, params=paraminput)
+    exchange_rate = currency.json()['Realtime Currency Exchange Rate']['5. Exchange Rate']
+    from_currency = paraminput['from_currency']
+    to_currency = paraminput['to_currency']
+    current_time = datetime.now().strftime('%H,%M,%S,%d,%m,%Y')
+    print(f'The exchange rate from {from_currency} to {to_currency} is: {exchange_rate}')
 
-currency = requests.get(url, params=params_crypex)
-exchange_rate = currency.json()['Realtime Currency Exchange Rate']['5. Exchange Rate']
-print(f'The exchange rate from BTC to USD is: {exchange_rate}')
+    f = open('btc_usd.csv', 'a')
+    f.write(f'{current_time},{exchange_rate}\n')
+    f.close()
+
+    return [from_currency,to_currency,exchange_rate]
+
 
 # Task 2 and 3
 def GenerateFile (para):
@@ -59,5 +72,25 @@ def GenerateFile (para):
 
     return
 
-GenerateFile(params_crypto)
-GenerateFile(params_ema)
+
+def CheckHighPrice(price):
+    
+    if float(price) > high_price[0]:
+        high_price.append(float(price))
+        high_price.pop(0)
+        print('High price updated')
+        print(f'High BTC-USD price is now {high_price[0]}')
+        return float(price)
+
+
+    return
+
+
+
+
+while True:
+    
+    x = GetCurrency(btc_to_usd)
+    CheckHighPrice(x[2])
+    time.sleep(12)
+    
